@@ -18,11 +18,12 @@ public class MovingJoystick : MonoBehaviour
     private Vector3 joyVec;
     private Vector3 joyRot;
 
+
     void Start()
     {
         Init();
-
     }
+
 
     private void Init()
     {
@@ -43,6 +44,7 @@ public class MovingJoystick : MonoBehaviour
         mJSBack.SetActive(false);
         mJStick.SetActive(false);
     }
+
 
     public void MovingStart(BaseEventData _Data)
     {
@@ -86,7 +88,6 @@ public class MovingJoystick : MonoBehaviour
         joyRot = Vector3.zero;
         joyMov = Vector3.zero;
     }
-
 
 
 }

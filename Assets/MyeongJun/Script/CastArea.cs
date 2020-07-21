@@ -19,17 +19,16 @@ public class CastArea : MonoBehaviour
     private RectTransform lineOnEditRcTs;
     private CircleIdentifier circleOnEdit;
 
+
     private int firstCastNumber;
     private int castNumber;
-    private int touchCount;
 
     private bool drawing;
     private bool stopDrawing;
 
-    private Vector3 touchPos;
-
     private GameObject lineOnEdit;
     private GameObject castArea;
+    private GameObject castSpot;
 
 
     void Start()
@@ -38,13 +37,14 @@ public class CastArea : MonoBehaviour
         lCircles = new List<CircleIdentifier>();
         circles = new Dictionary<int, CircleIdentifier>();
         castArea = GameObject.Find("CastArea");
+        castSpot = GameObject.Find("CastSpot");
         for(int i = 0;  i < 6; i++)
         {
-            lines[i] = transform.GetChild(i + 8).gameObject;
+            lines[i] = transform.GetChild(i + 3).gameObject;
         }
         for (int i = 0; i < 5; i++)
         {
-            var circle = transform.GetChild(i + 2);
+            var circle = transform.GetChild(i + 9);
             var identifier = circle.GetComponent<CircleIdentifier>();
             identifier.id = i;
             circles.Add(i, identifier);
@@ -62,12 +62,29 @@ public class CastArea : MonoBehaviour
         drawing = false;
         stopDrawing = false;
         lineOnEdit = null;
+        lineOnEditRcTs = null;
         firstCastNumber = 6;
         castNumber = 0;
-        for(int i = 0; i <6; i++)
+        foreach (var line in lines)
         {
-            lines[i].SetActive(false);
+            line.gameObject.SetActive(false);
         }
+        for (int i = 0; i < 6; i++)
+        {
+            lineId[i] = 6;
+        }
+        castSpot.SetActive(false);
+
+        
+
+
+        drawing = false;
+        castNumber = 0;
+        //castingBack.GetComponent<Image>().color = new Color(0, 0, 0, 50 / 255f);
+        lineOnEdit = null;
+        lineOnEditRcTs = null;
+        circleOnEdit = null;
+        firstCastNumber = 6;
     }
 
     private void Init()
@@ -76,38 +93,19 @@ public class CastArea : MonoBehaviour
     }
 
 
-    // Update is called once per frame
     void Update()
     {
         if (drawing)
         {
-            lineOnEditRcTs.sizeDelta = new Vector2(lineOnEditRcTs.sizeDelta.x, Vector3.Distance(touchPos, circleOnEdit.transform.position));
+            lineOnEditRcTs.sizeDelta = new Vector2(lineOnEditRcTs.sizeDelta.x, Vector3.Distance(castSpot.transform.localPosition, circleOnEdit.transform.localPosition));
             lineOnEditRcTs.rotation = Quaternion.FromToRotation(
                 Vector3.up,
-                (touchPos - circleOnEdit.transform.position).normalized);
+                (castSpot.transform.localPosition - circleOnEdit.transform.localPosition).normalized);
         }
     }
 
     public void OnTouchDownCircle(CircleIdentifier idf)
     {
-        /*switch (Input.touchCount)
-        {
-            case 1:
-                touchCount = 1;
-                break;
-            case 2:
-                touchCount = 2;
-                break;
-            case 3:
-                touchCount = 3;
-                break;
-            case 4:
-                touchCount = 4;
-                break;
-            default:
-                break;
-        } //터치 수 판별기 - 터치 구별 용 */
-
         drawing = true;
         firstCastNumber = idf.id;
         for (int n = 0; n < 6; n++)
@@ -119,20 +117,18 @@ public class CastArea : MonoBehaviour
             lineNumbers[i] = 99;
         }
         TrySetLineEdit(idf);
-        touchPos = circleOnEdit.transform.position;
-
-        Debug.Log(circleOnEdit.transform.position + "시작점");
+        castSpot.SetActive(true);
+        castSpot.transform.position = circleOnEdit.transform.position;
     }
 
     public void OnTouchDrag(BaseEventData _Data)
     {
         PointerEventData Data = _Data as PointerEventData;
-        touchPos = Data.position;
+        castSpot.transform.position = Data.position;
     }
 
     public void OnTouchEnterCircle(CircleIdentifier idf)
     {
-        Debug.Log(idf.id);
         if (drawing)
         {
             lineOnEditRcTs.sizeDelta = new Vector2(
@@ -145,28 +141,13 @@ public class CastArea : MonoBehaviour
 
             TrySetLineEdit(idf);
         }
-
-        
-        
     }
 
     public void OnTouchUpCircle()
     {
-        foreach(var line in lines)
-                {
-            line.gameObject.SetActive(false);
-        }
-        
-
-        drawing = false;
-        castNumber = 0;
-        //castingBack.GetComponent<Image>().color = new Color(0, 0, 0, 50 / 255f);
-        lineOnEdit = null;
-        lineOnEditRcTs = null;
-        circleOnEdit = null;
-        touchPos = Vector3.zero;
-        firstCastNumber = 6;
-    } 
+        DrawingInit();
+        lCircles.Clear();
+    }
 
     private void TrySetLineEdit(CircleIdentifier circle)
     {
@@ -195,9 +176,7 @@ public class CastArea : MonoBehaviour
         var line = lines[castNumber];
         lines[castNumber].SetActive(true);
         line.transform.localPosition = pos;
-        var lineIdf = line.AddComponent<CircleIdentifier>();
-        lineIdf.id = id;
-        lineId[castNumber] = id; 
+        lineId[castNumber] = id;
         return line;
     }
 }

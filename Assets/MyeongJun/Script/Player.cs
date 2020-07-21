@@ -10,7 +10,6 @@ public class Player : MonoBehaviour
     public float playerSpeed;
 
     private MovingJoystick joyStick;
-    private GameObject player;
 
 
     void Start()
@@ -19,9 +18,8 @@ public class Player : MonoBehaviour
     }
 
     private void Init()
-    {
+    {    
         joyStick = GameObject.Find("MovingJoyStickArea").GetComponent<MovingJoystick>();
-        player = GameObject.Find("Player");
         playerHp = 1;
         playerSpeed = 10f;
     }
@@ -36,7 +34,7 @@ public class Player : MonoBehaviour
 
     private void PlayerMove()
     {
-        player.transform.Translate(Vector3.right * joyStick.joyMov.x * playerSpeed * Time.deltaTime);
-        player.transform.Translate(Vector3.up * joyStick.joyMov.y * playerSpeed * Time.deltaTime);
+        transform.Translate(Vector3.right * joyStick.joyMov.x * playerSpeed * Time.deltaTime);
+        transform.Translate(Vector3.up * joyStick.joyMov.y * playerSpeed * Time.deltaTime);
     }
 }
