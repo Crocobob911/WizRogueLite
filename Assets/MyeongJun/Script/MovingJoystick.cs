@@ -18,6 +18,14 @@ public class MovingJoystick : MonoBehaviour
     private Vector3 joyVec;
     private Vector3 joyRot;
 
+    private void Awake()
+    {
+        mJSBack = GameObject.Find("MovingJoyStickBack");
+        mJStick = GameObject.Find("MovingJoyStick");
+        jSRadius = mJSBack.GetComponent<RectTransform>().sizeDelta.y * 0.5f;
+        stickFirstPos = mJSBack.transform.position;
+        jSRadius  *= can.transform.GetComponent<RectTransform>().localScale.x;
+    }
 
     void Start()
     {
@@ -27,13 +35,6 @@ public class MovingJoystick : MonoBehaviour
 
     private void Init()
     {
-        mJSBack = GameObject.Find("MovingJoyStickBack");
-        mJStick = GameObject.Find("MovingJoyStick");
-
-        jSRadius = mJSBack.GetComponent<RectTransform>().sizeDelta.y * 0.5f;
-        stickFirstPos = mJSBack.transform.position;
-        float canSize = can.transform.GetComponent<RectTransform>().localScale.x;
-        jSRadius *= canSize;
         stickStartPos = Vector3.zero;
         joyVec = Vector3.zero;
         joyVec = Vector3.zero;
