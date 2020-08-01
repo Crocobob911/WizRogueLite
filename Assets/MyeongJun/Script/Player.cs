@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
     public float playerHpSpeed;
     public float playerMpSpeed;
     public float playerMoveSpeed;
+    public float playerCastSpeed;
     public float rotation;
 
     private MovingJoystick joyStick;
@@ -35,6 +36,7 @@ public class Player : MonoBehaviour
         playerHpSpeed = 1f;
         playerMpSpeed = 1f;
         playerMoveSpeed = 1f;
+        playerCastSpeed = 1f;
     }
 
 
@@ -47,7 +49,7 @@ public class Player : MonoBehaviour
     }
 
 
-    private void PlayerMove()
+    private void PlayerMove() 
     {
         if (joyStick.isMoving == true)
         {
@@ -74,3 +76,4 @@ public class Player : MonoBehaviour
         
     }
 }
+

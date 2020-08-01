@@ -3,34 +3,39 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using UnityEngine.Rendering;
-using UnityEngine.Video;
 
 public class CastArea : MonoBehaviour
 {
     public Canvas can;
+    public bool castDone;
 
     private int[] cast = new int[6];
     private int[] lineNumbers = new int[5];
     private int[] sortedLineNumbers = new int[5];
     private int[] lineId = new int[6];
+    private GameObject[] loadingLines = new GameObject[5];
+
     private GameObject[] lines = new GameObject[6];
     private List<CircleIdentifier> lCircles;
     //private List<CircleIdentifier> linesId;
     private Dictionary<int, CircleIdentifier> circles;
     private RectTransform lineOnEditRcTs;
+    private RectTransform loadingLinesRcTs;
     private CircleIdentifier circleOnEdit;
     private WizDirector wizDirector;
+    private Player player;
 
     private int firstCastNumber;
     private int castNumber;
+    private int castLineCount;
+    private float lineLength;
 
     private bool drawing;
     private bool stopDrawing;
     private bool cancelDrawing;
 
     private GameObject lineOnEdit;
-    private GameObject castArea;
+    public GameObject castArea;
     private GameObject castSpot;
     //private GameObject castDirectorGm;
 
@@ -42,60 +47,71 @@ public class CastArea : MonoBehaviour
         wizDirector = GameObject.Find("WizDirector").GetComponent<WizDirector>();
         castArea = GameObject.Find("CastArea");
         castSpot = GameObject.Find("CastSpot");
+        player = GameObject.Find("Player").GetComponent<Player>();
         for (int i = 0; i < 6; i++)
         {
-            lines[i] = transform.GetChild(i + 3).gameObject;
+            lines[i] = transform.GetChild(i + 2).gameObject;
         }
         for (int i = 0; i < 5; i++)
         {
-            var circle = transform.GetChild(i + 9);
+            var circle = transform.GetChild(i + 8);
             var identifier = circle.GetComponent<CircleIdentifier>();
             identifier.id = i;
             circles.Add(i, identifier);
+
+            loadingLines[i] = transform.GetChild(i + 14).gameObject;
         }
     }
     void Start()
     {
-        Init();
+        DrawInit();
+        CastInit();
     }
 
-    private void Init()
+    public void DrawInit()
     {
-        
         drawing = false;
         stopDrawing = false;
         lineOnEdit = null;
         lineOnEditRcTs = null;
         firstCastNumber = 6;
-        castNumber = 0;
-        foreach (var line in lines)
-        {
-            line.gameObject.SetActive(false);
-        }
         for (int i = 0; i < 6; i++)
         {
             lineId[i] = 6;
+            lines[i].SetActive(false);
         }
         for (int i = 0; i < 5; i++)
         {
             lineNumbers[i] = 99;
-        }
-        for (int i = 0; i < 5; i++)
-        {
             sortedLineNumbers[i] = 99;
         }
         castSpot.SetActive(false);
-
         drawing = false;
-        castNumber = 0;
         castArea.GetComponent<Image>().color = new Color(0, 0, 0, 50 / 255f);
-        lineOnEdit = null;
-        lineOnEditRcTs = null;
         circleOnEdit = null;
         firstCastNumber = 6;
-        lCircles.Clear();
+        
     }
 
+    public void CastInit()
+    {
+        castDone = true;
+        for(int i=0; i<5; i++)
+        {
+            loadingLinesRcTs = loadingLines[i].GetComponent<RectTransform>();
+            loadingLinesRcTs.sizeDelta
+                = new Vector2(loadingLinesRcTs.sizeDelta.x, 0f);
+            loadingLines[i].SetActive(false);
+        }
+        for(int i=0; i<castNumber; i++)
+        {
+            lCircles[i].transform.GetChild(0).GetComponent<Image>().color
+                = new Color(0, 0, 0, 1f);
+        }
+        castLineCount = 0;
+        castNumber = 0;
+        lCircles.Clear();
+    }
 
     void Update()
     {
@@ -125,6 +141,7 @@ public class CastArea : MonoBehaviour
     public void OnTouchDownCircle(CircleIdentifier idf)
     {
         drawing = true;
+        castDone = false;
         firstCastNumber = idf.id;
         for (int n = 0; n < 6; n++)
         {
@@ -170,7 +187,8 @@ public class CastArea : MonoBehaviour
     {
         if (cancelDrawing) //드로잉 취소
         {
-            Init();
+            DrawInit();
+            CastInit();
         }
         else //드로잉 완료
         {
@@ -191,9 +209,60 @@ public class CastArea : MonoBehaviour
                     }
                 }
             }
-            wizDirector.WizDectector(sortedLineNumbers);
-            Init();
+            wizDirector.WizDetector(sortedLineNumbers);
+            DrawInit();
         }
+
+    }
+
+    public IEnumerator DrawCast(float time)
+    {
+        float lineSpeed = 0;
+        for(int i = 0; i < castNumber -1; i++)
+        {
+            lineSpeed += Vector3.Distance(lCircles[castLineCount].transform.localPosition,
+                lCircles[castLineCount + 1].transform.localPosition);
+        }
+        lineSpeed = lineSpeed * player.playerCastSpeed / time;
+
+
+        while (castLineCount < castNumber - 1)
+        {
+            loadingLines[castLineCount].SetActive(true);
+            lineLength = Vector3.Distance(lCircles[castLineCount].transform.localPosition,
+                lCircles[castLineCount + 1].transform.localPosition);
+            lCircles[castLineCount].transform.GetChild(0).GetComponent<Image>().color
+                = new Color(1f, 0, 0, 1f);
+            loadingLinesRcTs = loadingLines[castLineCount].GetComponent<RectTransform>();
+            loadingLinesRcTs.localPosition = lCircles[castLineCount].gameObject.transform.localPosition;
+            loadingLinesRcTs.rotation =
+                Quaternion.FromToRotation(
+                    Vector3.up,
+                    (lCircles[castLineCount + 1].transform.localPosition - lCircles[castLineCount].transform.localPosition).normalized);
+
+            while(loadingLinesRcTs.sizeDelta.y < lineLength)
+            {
+                loadingLinesRcTs.sizeDelta =
+                    new Vector2(loadingLinesRcTs.sizeDelta.x,
+                    loadingLinesRcTs.sizeDelta.y + lineSpeed * Time.deltaTime);
+
+                if (loadingLinesRcTs.sizeDelta.y > lineLength)
+                {
+                    loadingLinesRcTs.sizeDelta
+                    = new Vector3(loadingLinesRcTs.sizeDelta.x, lineLength, 0);
+                }
+                yield return new WaitForSeconds(0.01f);
+            }
+            lCircles[castLineCount+1].transform.GetChild(0).GetComponent<Image>().color
+                = new Color(1f, 0, 0, 1f);
+
+            castLineCount++;
+
+        }
+
+        yield return new WaitForSeconds(0.2f);
+        wizDirector.wizActive();
+        CastInit();
 
     }
 

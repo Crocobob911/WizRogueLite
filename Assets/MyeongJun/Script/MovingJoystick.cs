@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class MovingJoystick : MonoBehaviour
 {
-    public Canvas can;
     public Vector3 joyMov;
     public bool isMoving;
     public float jSRadius;
@@ -24,11 +24,11 @@ public class MovingJoystick : MonoBehaviour
         mJStick = GameObject.Find("MovingJoyStick");
         jSRadius = mJSBack.GetComponent<RectTransform>().sizeDelta.y * 0.5f;
         stickFirstPos = mJSBack.transform.position;
-        jSRadius  *= can.transform.GetComponent<RectTransform>().localScale.x;
     }
 
     void Start()
     {
+        jSRadius *= transform.parent.GetComponent<RectTransform>().localScale.x;
         Init();
     }
 
@@ -72,7 +72,6 @@ public class MovingJoystick : MonoBehaviour
             joyMov = joyRot * stickDis / jSRadius;
         else
             joyMov = joyRot;
-        
 
         mJStick.transform.position = stickStartPos + joyMov * jSRadius;
     }
