@@ -4,16 +4,28 @@ using UnityEngine;
 
 public class WizDataBase : MonoBehaviour
 {
-    public WizProjectilePrac WizPractice;
+    public WizProjectilePrac wizPractice;
+
+    public GameObject wizPracticeGM;
 
     private void Awake()
     {
-        WizPractice = GameObject.Find("WizDB").GetComponent<WizProjectilePrac>();
-        
+        WizGameObjectLoad();
+        WizComponentLoad();
+        WizLoadDone();
     }
 
-    void Update()
+    private void WizGameObjectLoad()
     {
+        wizPracticeGM = GameObject.Find("WizPractice");
+    }
 
+    private void WizComponentLoad()
+    {
+        wizPractice = wizPracticeGM.GetComponent<WizProjectilePrac>();
+    }
+
+    private void WizLoadDone() {
+        wizPracticeGM.SetActive(false);
     }
 }

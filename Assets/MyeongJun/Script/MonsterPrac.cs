@@ -2,17 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NoneAimWiz : Wiz
+public class MonsterPrac : Monster
 {
-    // Start is called before the first frame update
+    
+
     void Start()
     {
-        
+        Init();
     }
 
-    // Update is called once per frame
+    private void Init()
+    {
+        monsterHP = 200;
+    }
+
+
     void Update()
     {
-        
+        MonsterDie();
     }
+
 }

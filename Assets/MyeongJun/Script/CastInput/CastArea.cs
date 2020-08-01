@@ -17,7 +17,6 @@ public class CastArea : MonoBehaviour
 
     private GameObject[] lines = new GameObject[6];
     private List<CircleIdentifier> lCircles;
-    //private List<CircleIdentifier> linesId;
     private Dictionary<int, CircleIdentifier> circles;
     private RectTransform lineOnEditRcTs;
     private RectTransform loadingLinesRcTs;
@@ -37,7 +36,7 @@ public class CastArea : MonoBehaviour
     private GameObject lineOnEdit;
     public GameObject castArea;
     private GameObject castSpot;
-    //private GameObject castDirectorGm;
+    private GameObject aimStick;
 
     private void Awake()
     {
@@ -45,6 +44,7 @@ public class CastArea : MonoBehaviour
         circles = new Dictionary<int, CircleIdentifier>();
         //castDirectorGm = GameObject.Find("CastDirector");
         wizDirector = GameObject.Find("WizDirector").GetComponent<WizDirector>();
+        aimStick = GameObject.Find("AimStick");
         castArea = GameObject.Find("CastArea");
         castSpot = GameObject.Find("CastSpot");
         player = GameObject.Find("Player").GetComponent<Player>();
@@ -261,7 +261,7 @@ public class CastArea : MonoBehaviour
         }
 
         yield return new WaitForSeconds(0.2f);
-        wizDirector.wizActive();
+        aimStick.SetActive(true);
         CastInit();
 
     }

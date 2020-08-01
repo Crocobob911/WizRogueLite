@@ -1,26 +1,22 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Numerics;
 using UnityEngine;
 
 public class WizDirector : MonoBehaviour
 {
-    public delegate void WizDelegate();
-    public WizDelegate wizActive;
-    public GameObject wizOnEditGM;
+    public delegate void WizActive(bool active);
+    public delegate void WizShoot(UnityEngine.Vector3 rot);
+    public WizActive wizActive;
+    public WizShoot wizShoot;
 
     private string lineNumbers;
-    private int wizOnEditNum;
-    private GameObject[] wizGameObjects = new GameObject[3];
     private WizDataBase wizDB;
     private CastArea castArea;
 
     private void Awake()
     {
-        for (int i = 0; i < 3; i++)
-        {
-            wizGameObjects[i] = transform.GetChild(i).gameObject;
-        }
         wizDB = GameObject.Find("WizDB").GetComponent<WizDataBase>();
         castArea = GameObject.Find("CastArea").GetComponent<CastArea>();
     }
@@ -33,7 +29,6 @@ public class WizDirector : MonoBehaviour
     private void Init()
     {
         lineNumbers = "9999999999";
-        wizOnEditNum = 0;
     }
 
     public void WizDetector(int[] lines)
@@ -42,11 +37,10 @@ public class WizDirector : MonoBehaviour
         Debug.Log(lineNumbers);
         switch (lineNumbers)
         {
-            case "03479":  // id : 99   ---  여기에 id
-                WizObjectManager();
-                wizOnEditGM.AddComponent<WizProjectilePrac>();
-                StartCoroutine(castArea.DrawCast(wizDB.WizPractice.wizCastTime));
-                wizActive = wizDB.WizPractice.WizActive;
+            case "099999999":  // id : 99   ---  여기에 id
+                StartCoroutine(castArea.DrawCast(0.7f));
+                wizShoot = wizDB.wizPractice.WizRotate;
+                wizActive = wizDB.wizPracticeGM.SetActive;
                 break;
 
 
@@ -57,21 +51,7 @@ public class WizDirector : MonoBehaviour
             // 이제 여기서 올바른 위즈를 판단해주고,
             // 적당한 위치(wiz 1, 2, 3 중 하나)에 그 위즈를 배정해주는 역할을 할거야
             // 조준이냐 범위냐 따라 다르게 행동하는 건 위즈 각자가 해야할 일이야
+            //0.3  0.7  1.2  1.8  2.5
         }
-    }
-
-    private void WizObjectManager()
-    {
-        if (wizOnEditNum == 0)
-            wizOnEditGM = wizGameObjects[0];
-
-        else if (wizOnEditNum == 1)
-            wizOnEditGM = wizGameObjects[1];
-
-        else if (wizOnEditNum == 2)
-            wizOnEditGM = wizGameObjects[2];
-
-        wizOnEditNum++;
-
     }
 }

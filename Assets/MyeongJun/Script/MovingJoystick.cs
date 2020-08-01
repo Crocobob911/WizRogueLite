@@ -12,6 +12,7 @@ public class MovingJoystick : MonoBehaviour
 
     private GameObject mJSBack; //moving Joy Stick의 약자
     private GameObject mJStick;
+    private GameObject mJStickGuide;
     private Vector3 stickFirstPos;
     private Vector3 stickStartPos;
     private Vector3 stickPos;
@@ -22,26 +23,26 @@ public class MovingJoystick : MonoBehaviour
     {
         mJSBack = GameObject.Find("MovingJoyStickBack");
         mJStick = GameObject.Find("MovingJoyStick");
-        jSRadius = mJSBack.GetComponent<RectTransform>().sizeDelta.y * 0.5f;
-        stickFirstPos = mJSBack.transform.position;
+        mJStickGuide = GameObject.Find("MovingJoyStickGuide");
+        jSRadius = GameObject.Find("MovingJoyStickBack").GetComponent<RectTransform>().sizeDelta.y
+            * transform.parent.GetComponent<RectTransform>().localScale.x * 0.5f;
     }
 
     void Start()
-    {
-        jSRadius *= transform.parent.GetComponent<RectTransform>().localScale.x;
+    { 
         Init();
     }
 
 
     private void Init()
     {
-        stickStartPos = Vector3.zero;
-        joyVec = Vector3.zero;
+        isMoving = false;
+        mJSBack.transform.localPosition = Vector3.zero;
+        mJStick.transform.localPosition = Vector3.zero;
         joyVec = Vector3.zero;
         joyRot = Vector3.zero;
         joyMov = Vector3.zero;
-        isMoving = false;
-
+        stickStartPos = Vector3.zero;
         mJSBack.SetActive(false);
         mJStick.SetActive(false);
     }
@@ -52,9 +53,10 @@ public class MovingJoystick : MonoBehaviour
         mJSBack.SetActive(true);
         mJStick.SetActive(true);
         PointerEventData Data = _Data as PointerEventData;
-        stickStartPos = Data.position;
-        mJSBack.transform.position = stickStartPos;
-        mJStick.transform.position = stickStartPos;
+        mJStickGuide.transform.position = Data.position;
+        stickStartPos = mJStickGuide.transform.localPosition;
+        mJSBack.transform.localPosition = stickStartPos;
+        mJStick.transform.localPosition = Vector3.zero;
         isMoving = true;
 
     }
@@ -63,7 +65,8 @@ public class MovingJoystick : MonoBehaviour
     public void Moving(BaseEventData _Data)
     {
         PointerEventData Data = _Data as PointerEventData;
-        stickPos = Data.position;
+        mJStickGuide.transform.position = Data.position;
+        stickPos = mJStickGuide.transform.localPosition;
         joyVec = stickPos - stickStartPos;
         joyRot = joyVec.normalized;
 
@@ -73,20 +76,13 @@ public class MovingJoystick : MonoBehaviour
         else
             joyMov = joyRot;
 
-        mJStick.transform.position = stickStartPos + joyMov * jSRadius;
+        mJStick.transform.localPosition = joyMov * jSRadius;
     }
 
 
     public void MovingEnd()
     {
-        isMoving = false;
-        mJSBack.transform.position = stickFirstPos;
-        mJStick.transform.position = stickFirstPos;
-        mJSBack.SetActive(false);
-        mJStick.SetActive(false);
-        joyVec = Vector3.zero;
-        joyRot = Vector3.zero;
-        joyMov = Vector3.zero;
+        Init();
     }
 
 

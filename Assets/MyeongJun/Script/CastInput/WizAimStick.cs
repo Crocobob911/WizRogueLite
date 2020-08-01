@@ -8,22 +8,25 @@ public class WizAimStick : MonoBehaviour
     public GameObject aimStick;
     public Vector3 aimRot;
 
-    private AimWiz aimWiz;
+    private WizDirector wizDirector;
     private Vector3 stickPos;
     private Vector3 stickStartPos;
     private float aSRadius;
     private bool isAiming;
+    private GameObject aimStickGuide;
 
     private void Awake()
     {
+        wizDirector = GameObject.Find("WizDirector").GetComponent<WizDirector>();
+        aimStickGuide = GameObject.Find("AimStickGuide");
         aimStick = GameObject.Find("AimStick");
+        aSRadius = GameObject.Find("CastArea").GetComponent<RectTransform>().sizeDelta.y
+            * transform.parent.GetComponent<RectTransform>().localScale.x * 0.5f;
+        
     }
 
     void Start()
     {
-        stickStartPos = transform.position;
-        aSRadius = GameObject.Find("CastArea").GetComponent<RectTransform>().sizeDelta.y 
-            * transform.parent.GetComponent<RectTransform>().localScale.x * 0.5f;
         Init();
         Invoke("StickAwakeEnd", 0.05f);
     }
@@ -34,6 +37,7 @@ public class WizAimStick : MonoBehaviour
         aimStick.transform.localPosition = Vector3.zero;
         aimRot = Vector3.zero;
         stickPos = Vector3.zero;
+        stickStartPos = Vector3.zero;
     }
 
     public void AimingStart(BaseEventData _Data)
@@ -44,18 +48,24 @@ public class WizAimStick : MonoBehaviour
     public void Aiming(BaseEventData _Data)
     {
         PointerEventData Data = _Data as PointerEventData;
-        stickPos = Data.position;
+        aimStickGuide.transform.position = Data.position;
+        stickPos = aimStickGuide.transform.localPosition;
         aimRot = (stickPos - stickStartPos).normalized;
+        
 
         float stickDis = Vector3.Distance(stickPos, stickStartPos);
         if (stickDis < aSRadius)
-            aimStick.transform.position = stickStartPos + aimRot * stickDis;
+            aimStick.transform.localPosition = aimRot * stickDis;
         else
-            aimStick.transform.position = stickStartPos + aimRot * aSRadius;
+            aimStick.transform.localPosition = aimRot * aSRadius;
+
+        //Debug.Log(aimStick.transform.position);
     }
 
     public void AimingEnd()
     {
+        wizDirector.wizActive(true);
+        wizDirector.wizShoot(aimRot);
         Init();
         aimStick.SetActive(false);
     }

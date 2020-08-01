@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -23,14 +24,9 @@ public class AimWiz : Wiz
         wizAimStick = GameObject.Find("AimStick").GetComponent<WizAimStick>();
     }
 
-    public override void WizActive()
+    public virtual void WizRotate(Vector3 rot)
     {
-        SetAimStick();
-        wizOnEdit = wizDirector.wizOnEditGM;
-    }
-
-    public virtual void WizShoot(Vector3 rot)
-    {
-
+        transform.position = playerGM.transform.position;
+        transform.eulerAngles = new Vector3(0f, 0f, -Mathf.Atan2(rot.x, rot.y) * Mathf.Rad2Deg);
     }
 }

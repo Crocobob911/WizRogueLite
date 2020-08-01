@@ -6,7 +6,6 @@ using UnityEngine;
 public class Wiz : MonoBehaviour
 {
     public float wizCastTime;
-    public Sprite wizSprite;
 
     protected int wizId;
     protected int wizGrade;
@@ -14,6 +13,7 @@ public class Wiz : MonoBehaviour
     protected string wizName;
     protected CastArea castArea;
     protected WizDirector wizDirector;
+    protected GameObject playerGM;
     
 
     private void Awake()
@@ -25,13 +25,16 @@ public class Wiz : MonoBehaviour
 
     protected virtual void WizAwake()
     {
+        playerGM = GameObject.Find("Player");
         castArea = GameObject.Find("CastArea").GetComponent<CastArea>();
         wizDirector = GameObject.Find("WizDirector").GetComponent<WizDirector>();
     }
-    public virtual void WizActive() //위즈 활성화
-    {
-        Debug.Log("Wiz Activated!");
+
+    protected virtual void WizGiveDamage(Collider2D coll, int damage)
+    { 
+            coll.gameObject.GetComponent<Monster>().GetDamage(damage);
     }
+    /*
 
     public virtual void WizTypeEffect() //위즈 계열에 따른 능력
     {
@@ -41,10 +44,10 @@ public class Wiz : MonoBehaviour
     public virtual void WizEffect() //위즈의 효과
     {
 
-    }
+    }*/
 
     public void WizInitializer()
     {
-        Destroy(this);
+        gameObject.SetActive(false);
     }
 }

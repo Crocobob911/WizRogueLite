@@ -15,9 +15,4 @@ public class BuffWiz : Wiz
     {
         
     }
-
-    public override void WizActive()
-    {
-        base.WizActive();
-    }
 }
