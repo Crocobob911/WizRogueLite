@@ -75,5 +75,26 @@ public class Player : MonoBehaviour
         }
         
     }
+
+    public void wizRotateAnim(Vector3 rotate)
+    {
+        float rot = Mathf.Atan2(joyStick.joyMov.y, joyStick.joyMov.x) * Mathf.Rad2Deg;
+        anim.SetBool("isShooting", true);
+        if (rot >= -135 && rot <= -45)
+            anim.SetInteger("direction", 0); //front 앞모습
+        else if (rot > 135 || rot < -135)
+            anim.SetInteger("direction", 1); //left
+        else if (rot > -45 && rot < 45)
+            anim.SetInteger("direction", 2); //right
+        else
+            anim.SetInteger("direction", 3); //back 뒷모습
+
+        Invoke("WizShootDone", 0.02f);
+    }
+
+    private void WizShootDone()
+    {
+        anim.SetBool("isShooting", false);
+    }
 }
 

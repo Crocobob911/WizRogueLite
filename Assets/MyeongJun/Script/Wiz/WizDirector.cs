@@ -14,11 +14,13 @@ public class WizDirector : MonoBehaviour
     private string lineNumbers;
     private WizDataBase wizDB;
     private CastArea castArea;
+    private Player player;
 
     private void Awake()
     {
         wizDB = GameObject.Find("WizDB").GetComponent<WizDataBase>();
         castArea = GameObject.Find("CastArea").GetComponent<CastArea>();
+        player = GameObject.Find("Player").GetComponent<Player>();
     }
 
     private void Start()
@@ -34,14 +36,29 @@ public class WizDirector : MonoBehaviour
     public void WizDetector(int[] lines)
     {
         lineNumbers = Convert.ToString(lines[0]) + Convert.ToString(lines[1]) + Convert.ToString(lines[2]) + Convert.ToString(lines[3]) + Convert.ToString(lines[4]);
-        Debug.Log(lineNumbers);
+        //Debug.Log(lineNumbers);
         switch (lineNumbers)
         {
-            case "099999999":  // id : 99   ---  여기에 id
-                StartCoroutine(castArea.DrawCast(0.7f));
+            /*case "03479":  // id : 99   ---  여기에 id
+                StartCoroutine(castArea.DrawCast(2.5f));
                 wizShoot = wizDB.wizPractice.WizRotate;
                 wizActive = wizDB.wizPracticeGM.SetActive;
+                break;*/
+
+            case "36999999":  // id : 13
+                StartCoroutine(castArea.DrawCast(1.2f));
+                wizShoot = wizDB.wiz13.GetComponent<AimWiz>().WizRotate;
+                wizShoot += player.wizRotateAnim;
+                wizActive = wizDB.wiz13OB.SetActive;
                 break;
+
+            case "199999999": // id : 22
+                StartCoroutine(castArea.DrawCast(0.7f));
+                wizShoot = wizDB.wiz22.GetComponent<AimWiz>().WizRotate;
+                wizShoot += player.wizRotateAnim;
+                wizActive = wizDB.wiz22OB.SetActive;
+                break;
+
 
 
             default:

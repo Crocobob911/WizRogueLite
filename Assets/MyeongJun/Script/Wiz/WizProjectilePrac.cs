@@ -3,24 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class WizProjectilePrac : AimWiz
-{   //조준 투사체 연습용 발동
-
-    public float effectSpeed;
-    public float destroySpeed;
-    public int damage;
+{   //물 3성 웨이브
 
     private void Awake()
     {
+        wizId = 13;
+
         WizAwake();
         effectSpeed = 3f;
-        wizCastTime = 2.5f;
-        destroySpeed = 2f;
+        destroyTime = 2f;
         damage = 100;
     }
 
     private void OnEnable()
     {
-        Invoke("WizInitializer", destroySpeed);
+        Invoke("WizInitializer", destroyTime);
     }
 
 
@@ -36,13 +33,5 @@ public class WizProjectilePrac : AimWiz
             WizGiveDamage(other, damage);
         }
     }
-
-    protected override void WizGiveDamage(Collider2D coll, int dam)
-    {
-
-        base.WizGiveDamage(coll, dam);
-        WizInitializer();
-    }
-
 }
 

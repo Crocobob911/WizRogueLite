@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class Monster : MonoBehaviour
 {
-    public int monsterHP;
+    protected int monsterHP;
+    protected float moveSpeed;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -20,7 +22,7 @@ public class Monster : MonoBehaviour
     public virtual void GetDamage(int damage)
     {
         monsterHP -= damage;
-        Debug.Log("Monster HP : " + monsterHP);
+        Debug.Log("Damage : " + damage+ " / Monster HP : " + monsterHP);
     }
 
     protected void MonsterDie()

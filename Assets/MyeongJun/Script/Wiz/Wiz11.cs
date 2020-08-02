@@ -11,10 +11,9 @@ public class Wiz11 : Wiz
         wizId = 11;
         wizGrade = 1;
         wizType = 1;
-        wizName = "WaterElement";
     }
 
-    // Update is called once per frame
+
     void Update()
     {
         

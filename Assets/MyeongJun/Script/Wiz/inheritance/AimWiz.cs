@@ -8,10 +8,9 @@ public class AimWiz : Wiz
     protected WizAimStick wizAimStick;
     protected GameObject wizOnEdit;
 
-    private void Awake()
-    {
-        
-    }
+    protected float effectSpeed;
+    protected float destroyTime;
+    protected int damage;
 
     protected virtual void SetAimStick()
     {
@@ -24,9 +23,15 @@ public class AimWiz : Wiz
         wizAimStick = GameObject.Find("AimStick").GetComponent<WizAimStick>();
     }
 
+    public override void GetMonster(Collider2D monster)
+    {
+        base.GetMonster(monster);
+
+    }
+
     public virtual void WizRotate(Vector3 rot)
     {
-        transform.position = playerGM.transform.position;
-        transform.eulerAngles = new Vector3(0f, 0f, -Mathf.Atan2(rot.x, rot.y) * Mathf.Rad2Deg);
+        wizOB.transform.position = playerGM.transform.position;
+        wizOB.transform.eulerAngles = new Vector3(0f, 0f, -Mathf.Atan2(rot.x, rot.y) * Mathf.Rad2Deg);
     }
 }
