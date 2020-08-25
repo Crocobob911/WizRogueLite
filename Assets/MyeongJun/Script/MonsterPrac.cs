@@ -10,12 +10,13 @@ public class MonsterPrac : Monster
     {
         Init();
         rot = 1;
-        InvokeRepeating("RotationChange", 0f, 1f);
+        InvokeRepeating("rotAngleChange", 0f, 2f);
     }
 
     private void Init()
     {
-        monsterHP = 1000;
+        MonInit();
+        monsterHP = 10000;
         moveSpeed = 0.5f;
     }
 
@@ -31,9 +32,8 @@ public class MonsterPrac : Monster
         transform.Translate(new Vector3(rot, 0, 0) * Time.deltaTime * moveSpeed);
     }
 
-    private void RotationChange()
+    private void rotAngleChange()
     {
         rot *= -1;
     }
-
 }

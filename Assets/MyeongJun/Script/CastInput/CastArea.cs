@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 public class CastArea : MonoBehaviour
 {
     public Canvas can;
+    public GameObject aimStick;
     public bool castDone;
 
     private int[] cast = new int[6];
@@ -35,8 +36,7 @@ public class CastArea : MonoBehaviour
 
     private GameObject lineOnEdit;
     public GameObject castArea;
-    private GameObject castSpot;
-    private GameObject aimStick;
+    private GameObject touchSpot;
 
     private void Awake()
     {
@@ -46,20 +46,20 @@ public class CastArea : MonoBehaviour
         wizDirector = GameObject.Find("WizDirector").GetComponent<WizDirector>();
         aimStick = GameObject.Find("AimStick");
         castArea = GameObject.Find("CastArea");
-        castSpot = GameObject.Find("CastSpot");
+        touchSpot = GameObject.Find("TouchSpot");
         player = GameObject.Find("Player").GetComponent<Player>();
         for (int i = 0; i < 6; i++)
         {
-            lines[i] = transform.GetChild(i + 2).gameObject;
+            lines[i] = transform.GetChild(i+1).gameObject;
         }
         for (int i = 0; i < 5; i++)
         {
-            var circle = transform.GetChild(i + 8);
+            var circle = transform.GetChild(i + 9);
             var identifier = circle.GetComponent<CircleIdentifier>();
             identifier.id = i;
             circles.Add(i, identifier);
 
-            loadingLines[i] = transform.GetChild(i + 14).gameObject;
+            loadingLines[i] = transform.GetChild(i + 15).gameObject;
         }
     }
     void Start()
@@ -85,7 +85,7 @@ public class CastArea : MonoBehaviour
             lineNumbers[i] = 99;
             sortedLineNumbers[i] = 99;
         }
-        castSpot.SetActive(false);
+        //touchSpot.SetActive(false);
         drawing = false;
         castArea.GetComponent<Image>().color = new Color(0, 0, 0, 50 / 255f);
         circleOnEdit = null;
@@ -106,7 +106,7 @@ public class CastArea : MonoBehaviour
         for(int i=0; i<castNumber; i++)
         {
             lCircles[i].transform.GetChild(0).GetComponent<Image>().color
-                = new Color(0, 0, 0, 1f);
+                = new Color(1f, 1f, 1f, 1f);
         }
         castLineCount = 0;
         castNumber = 0;
@@ -117,13 +117,13 @@ public class CastArea : MonoBehaviour
     {
         if (drawing) //그리는 중
         {
-            lineOnEditRcTs.sizeDelta = new Vector2(lineOnEditRcTs.sizeDelta.x, Vector3.Distance(castSpot.transform.localPosition, circleOnEdit.transform.localPosition));
+            lineOnEditRcTs.sizeDelta = new Vector2(lineOnEditRcTs.sizeDelta.x, Vector3.Distance(touchSpot.transform.localPosition, circleOnEdit.transform.localPosition));
             lineOnEditRcTs.rotation = Quaternion.FromToRotation(
                 Vector3.up,
-                (castSpot.transform.localPosition - circleOnEdit.transform.localPosition).normalized);
+                (touchSpot.transform.localPosition - circleOnEdit.transform.localPosition).normalized);
 
 
-            if (Vector3.Distance(castSpot.transform.localPosition  // 중앙에서 많이 벗어나면 드로잉 취소
+            if (Vector3.Distance(touchSpot.transform.localPosition  // 중앙에서 많이 벗어나면 드로잉 취소
                 , Vector3.zero) > castArea.GetComponent<RectTransform>().sizeDelta.y)
             {
                 cancelDrawing = true;
@@ -152,14 +152,14 @@ public class CastArea : MonoBehaviour
             lineNumbers[i] = 99;
         }
         TrySetLineEdit(idf);
-        castSpot.SetActive(true);
-        castSpot.transform.position = circleOnEdit.transform.position;
+        touchSpot.SetActive(true);
+        touchSpot.transform.position = circleOnEdit.transform.position;
     }
 
     public void OnTouchDrag(BaseEventData _Data)
     {
         PointerEventData Data = _Data as PointerEventData;
-        castSpot.transform.position = Data.position;
+        touchSpot.transform.position = Data.position;
     }
 
     public void OnTouchEnterCircle(CircleIdentifier idf)
@@ -261,7 +261,7 @@ public class CastArea : MonoBehaviour
         }
 
         yield return new WaitForSeconds(0.2f);
-        aimStick.SetActive(true);
+        wizDirector.wizReady(true);
         CastInit();
 
     }

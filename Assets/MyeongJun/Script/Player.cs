@@ -12,8 +12,9 @@ public class Player : MonoBehaviour
     public float playerMpSpeed;
     public float playerMoveSpeed;
     public float playerCastSpeed;
-    public float rotation;
 
+    private Vector3 rotation;
+    private float rotAngle;
     private MovingJoystick joyStick;
     private Animator anim;
     private float animSpeed;
@@ -37,6 +38,7 @@ public class Player : MonoBehaviour
         playerMpSpeed = 1f;
         playerMoveSpeed = 1f;
         playerCastSpeed = 1f;
+        rotation = new Vector3(0, -1, 0);
     }
 
 
@@ -55,16 +57,17 @@ public class Player : MonoBehaviour
         {
             transform.Translate(Vector3.right * joyStick.joyMov.x * playerMoveSpeed * Time.deltaTime);
             transform.Translate(Vector3.up * joyStick.joyMov.y * playerMoveSpeed * Time.deltaTime);
-            float rot = Mathf.Atan2(joyStick.joyMov.y, joyStick.joyMov.x) * Mathf.Rad2Deg;
+            rotation = joyStick.joyMov;
+            rotAngle = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
 
             animSpeed = Vector3.Magnitude(joyStick.joyMov) / joyStick.jSRadius;
             anim.SetBool("isMoving", true);
 
-            if (rot >= -135 && rot <= -45)
+            if (rotAngle >= -135 && rotAngle <= -45)
                 anim.SetInteger("direction", 0); //front 앞모습
-            else if (rot > 135 || rot < -135)
+            else if (rotAngle > 135 || rotAngle < -135)
                 anim.SetInteger("direction", 1); //left
-            else if (rot > -45 && rot < 45)
+            else if (rotAngle > -45 && rotAngle < 45)
                 anim.SetInteger("direction", 2); //right
             else
                 anim.SetInteger("direction", 3); //back 뒷모습
@@ -78,18 +81,25 @@ public class Player : MonoBehaviour
 
     public void wizRotateAnim(Vector3 rotate)
     {
-        float rot = Mathf.Atan2(joyStick.joyMov.y, joyStick.joyMov.x) * Mathf.Rad2Deg;
+        rotation = rotate;
+        rotAngle = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
         anim.SetBool("isShooting", true);
-        if (rot >= -135 && rot <= -45)
+        if (rotAngle >= -135 && rotAngle <= -45)
             anim.SetInteger("direction", 0); //front 앞모습
-        else if (rot > 135 || rot < -135)
+        else if (rotAngle > 135 || rotAngle < -135)
             anim.SetInteger("direction", 1); //left
-        else if (rot > -45 && rot < 45)
+        else if (rotAngle > -45 && rotAngle < 45)
             anim.SetInteger("direction", 2); //right
         else
             anim.SetInteger("direction", 3); //back 뒷모습
 
         Invoke("WizShootDone", 0.02f);
+    }
+
+    public void Blink()
+    {
+        transform.Translate(Vector3.right * rotation.x * 0.48f);
+        transform.Translate(Vector3.up * rotation.y * 0.48f);
     }
 
     private void WizShootDone()
